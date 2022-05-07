@@ -5,7 +5,7 @@
             <keyword>open</keyword>
             <keyword>unlock</keyword>
         </triggers>
-        <subjects>
+            <subjects>
             <entity>trapdoor</entity>
             <entity>key</entity>
         </subjects>

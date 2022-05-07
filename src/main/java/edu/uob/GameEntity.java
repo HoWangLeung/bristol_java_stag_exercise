@@ -20,4 +20,10 @@ public abstract class GameEntity
     {
         return description;
     }
+
+
+    public void loadEntities(){
+        System.out.println("loading entites");
+    }
+
 }
