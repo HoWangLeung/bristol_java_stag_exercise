@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Location extends GameEntity {
-
+    private String shape ="none";
     List<Character> characters = new ArrayList<>();
     List<Artefact> arefacts = new ArrayList<>();
     List<Furniture> furnitures = new ArrayList<>();
@@ -51,5 +51,29 @@ public class Location extends GameEntity {
 
     public List<Path> getPaths() {
         return paths;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public void setShape(String shape) {
+        this.shape = shape;
+    }
+
+    public void setCharacters(List<Character> characters) {
+        this.characters = characters;
+    }
+
+    public void setArefacts(List<Artefact> arefacts) {
+        this.arefacts = arefacts;
+    }
+
+    public void setFurnitures(List<Furniture> furnitures) {
+        this.furnitures = furnitures;
+    }
+
+    public void setPaths(List<Path> paths) {
+        this.paths = paths;
     }
 }

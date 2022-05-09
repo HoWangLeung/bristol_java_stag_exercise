@@ -20,6 +20,9 @@ public class Player extends GameEntity {
         this.inventory.add(artefact);
     }
 
+    public void setInventory(List<Artefact> inventory) {
+        this.inventory = inventory;
+    }
 
     @Override
     public String toString() {

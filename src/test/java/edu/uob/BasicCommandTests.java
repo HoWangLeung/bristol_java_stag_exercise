@@ -28,10 +28,17 @@ final class BasicCommandTests {
   @Test
   void testLookingAroundStartLocation() {
     String response = server.handleCommand("player 1: look").toLowerCase();
+    System.out.println(response);
+
     assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
     assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
     assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
   }
+
+
+
+
+
 
   // Add more unit tests or integration tests here.
 

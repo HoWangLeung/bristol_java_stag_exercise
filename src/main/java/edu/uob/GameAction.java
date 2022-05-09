@@ -2,10 +2,16 @@ package edu.uob;
 
 import edu.uob.actions.Consumed;
 import edu.uob.actions.Subject;
+import edu.uob.subEntities.Artefact;
+import edu.uob.subEntities.Character;
+import edu.uob.subEntities.Furniture;
+import edu.uob.subEntities.Location;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class GameAction
 {
@@ -75,7 +81,7 @@ public class GameAction
 
     }
 
-    public void retriveSubjects(Element subjects){
+    public void retriveSubjects(Element subjects, TreeMap<String, Location> locationMap){
 
         int count =0;
         //System.out.println(triggers.getChildNodes() + "<<");
@@ -87,12 +93,51 @@ public class GameAction
         for(int i = 0 ;i<count;i++){
 
             String entity = subjects.getElementsByTagName("entity").item(i).getTextContent();
-            //System.out.println("entity=" + entity);
-            this.subjects.add(new Subject(entity));
+            Subject subject = new Subject(entity);
+            this.subjects.add(subject);
+        }
+
+        //map the shape
+        HashMap<String,Subject> subjectsMap= new HashMap<>();
+        for(int i =0;i<this.subjects.size();i++){
+            subjectsMap.put(this.subjects.get(i).getName(),this.subjects.get(i));
         }
 
 
-       // System.out.println("==============end of ret sub");
+        ArrayList<String> locationList = new ArrayList<>(locationMap.keySet());
+        for(int i =0;i<locationList.size();i++){
+            Location location = locationMap.get(locationList.get(i));
+            List<Furniture> furnitures = location.getFurnitures();
+            List<Artefact> artefacts = location.getArefacts();
+            List<Character> characters = location.getCharacters();
+
+            furnitures.forEach(furniture -> {
+                if(subjectsMap.containsKey(furniture.getName())){
+                    subjectsMap.get(furniture.getName()).setShape(furniture.getShape());
+                }
+            });
+
+
+            artefacts.forEach(artefact -> {
+                if(subjectsMap.containsKey(artefact.getName())){
+                    subjectsMap.get(artefact.getName()).setShape(artefact.getShape());
+                }
+            });
+
+            characters.forEach(character -> {
+                if(subjectsMap.containsKey(character.getName())){
+                    subjectsMap.get(character.getName()).setShape(character.getShape());
+                }
+            });
+
+
+
+
+        }
+       // this.subjects.forEach(s-> System.out.println(s.getName() + ":" +s.getShape()));
+
+
+        // System.out.println("==============end of ret sub");
     }
 
     public void retriveConsumed(Element consumed){
