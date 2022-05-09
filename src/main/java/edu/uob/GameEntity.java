@@ -26,4 +26,6 @@ public abstract class GameEntity
         System.out.println("loading entites");
     }
 
+
+
 }
