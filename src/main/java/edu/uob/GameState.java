@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.TreeMap;
 
 public class GameState {
+
     private Location startingLocation;
     private TreeMap<String, Location> locationMap;
     private TreeMap<String, HashSet<GameAction>> actionMap;
@@ -43,6 +44,11 @@ public class GameState {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public void removeItemFromLocation(Artefact artefact){
+        getLocationMap().get(getCurrentLocation().getName()).getArefacts().remove(artefact);
+        getLocationMap().get("storeroom").getArefacts().add(artefact);
     }
 
 
@@ -62,7 +68,6 @@ public class GameState {
 
             TreeMap<String, Location> locationMap= new TreeMap<>();
 
-            System.out.println("starrting = " + locations.get(0).getNodes(false).get(0));
 
             Node node = locations.get(0).getNodes(false).get(0);
 
@@ -122,7 +127,7 @@ public class GameState {
                         allCharacters.forEach(c->{
                             Character character = new Character(c.getId().getId(),c.getAttribute("description"));
                             character.setShape("ellipse");
-                            newLocation.addCharacters(character);
+                            newLocation.addCharacter(character);
                         });
                     }
 
@@ -146,6 +151,7 @@ public class GameState {
     }
 
     public void loadActions(TreeMap<String, Location> locationMap, File actionsFile) {
+        System.out.println("Loading actions");
         DocumentBuilder builder = null;
         TreeMap<String, HashSet<GameAction>> actionsTree = new TreeMap<String, HashSet<GameAction>>();
 
@@ -172,8 +178,8 @@ public class GameState {
 
                 newGameAction.retriveTriggers(triggers);
                 newGameAction.retriveSubjects(subjects,locationMap);
-                newGameAction.retriveConsumed(consumed);
-                newGameAction.retriveProduced(produced);
+                newGameAction.retriveConsumed(consumed,locationMap);
+                newGameAction.retriveProduced(produced,locationMap);
                 newGameAction.retriveNarration(narration);
 
                 // System.out.println(newGameAction.g);

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Player extends GameEntity {
-    List<Artefact> inventory = new ArrayList<>();
+    private List<Artefact> inventory = new ArrayList<>();
     public Player(String name, String description) {
         super(name, description);
     }

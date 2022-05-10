@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 // and maybe write some more, read up on how to write tests at
 // https://junit.org/junit5/docs/current/user-guide/#writing-tests
 final class BasicCommandTests {
-
+  String err = "[ERROR]";
   private GameServer server;
 
   // Make a new server for every @Test (i.e. this method runs before every @Test test case)
@@ -34,6 +34,49 @@ final class BasicCommandTests {
     assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
     assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
   }
+
+  @Test
+  void testGetPotion() {
+    String response = server.handleCommand("player 1: get potion");
+    assertTrue(response.contains("You picked up a potion"), "should contain potion");
+  }
+
+  @Test
+  void getTrapdoorFail() {
+    String response = server.handleCommand("player 1: get trapdoor");
+    assertTrue(response.startsWith(err));
+  }
+
+  @Test
+  void getElfFail() {
+    String response = server.handleCommand("player 1: get elf");
+    assertTrue(response.startsWith(err));
+  }
+
+  @Test
+  void getKeyFail() {
+    String response = server.handleCommand("player 1: get key");
+    assertTrue(response.startsWith(err));
+  }
+
+  @Test
+  void getKey() {
+    server.handleCommand("player 1: goto forest");
+    String response = server.handleCommand("player 1: get key");
+    assertTrue(response.contains("You picked up a key"));
+
+  }
+
+  @Test
+  void getKeyCheckInventory() {
+    server.handleCommand("player 1: goto forest");
+   server.handleCommand("player 1: get key");
+    String response = server.handleCommand("player 1: inv");
+    assertTrue(response.contains("key"));
+  }
+
+
+
 
 
 

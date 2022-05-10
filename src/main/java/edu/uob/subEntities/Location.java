@@ -22,7 +22,7 @@ public class Location extends GameEntity {
         return characters;
     }
 
-    public void addCharacters(Character character) {
+    public void addCharacter(Character character) {
         this.characters.add(character);
     }
 
