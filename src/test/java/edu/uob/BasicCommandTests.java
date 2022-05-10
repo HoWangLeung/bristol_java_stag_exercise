@@ -75,6 +75,12 @@ final class BasicCommandTests {
     assertTrue(response.contains("key"));
   }
 
+  @Test
+  void look() {
+    server.handleCommand("player 1: look");
+
+  }
+
 
 
 

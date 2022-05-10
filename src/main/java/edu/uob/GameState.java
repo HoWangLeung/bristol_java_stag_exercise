@@ -5,11 +5,8 @@ import com.alexmerz.graphviz.Parser;
 import com.alexmerz.graphviz.objects.Edge;
 import com.alexmerz.graphviz.objects.Graph;
 import com.alexmerz.graphviz.objects.Node;
-import edu.uob.subEntities.Artefact;
+import edu.uob.subEntities.*;
 import edu.uob.subEntities.Character;
-import edu.uob.subEntities.Furniture;
-import edu.uob.subEntities.Location;
-import edu.uob.subEntities.Path;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.TreeMap;
 
 public class GameState {
@@ -31,23 +29,26 @@ public class GameState {
     private Location startingLocation;
     private TreeMap<String, Location> locationMap;
     private TreeMap<String, HashSet<GameAction>> actionMap;
+    private Storeroom storeroom = new Storeroom();
+    private List<Player> playerList = new ArrayList<>();
+    private Player currentPlayer;
 
     public GameState() {
 
     }
 
-    private Location currentLocation;
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
-    }
+//    private Location currentLocation;
+//
+//    public Location getCurrentLocation() {
+//        return currentLocation;
+//    }
+//
+//    public void setCurrentLocation(Location currentLocation) {
+//        this.currentLocation = currentLocation;
+//    }
 
     public void removeItemFromLocation(Artefact artefact){
-        getLocationMap().get(getCurrentLocation().getName()).getArefacts().remove(artefact);
+        getLocationMap().get(currentPlayer.getCurrentLocation().getName()).getArefacts().remove(artefact);
         getLocationMap().get("storeroom").getArefacts().add(artefact);
     }
 
@@ -179,7 +180,7 @@ public class GameState {
                 newGameAction.retriveTriggers(triggers);
                 newGameAction.retriveSubjects(subjects,locationMap);
                 newGameAction.retriveConsumed(consumed,locationMap);
-                newGameAction.retriveProduced(produced,locationMap);
+                newGameAction.retriveProduced(produced,locationMap,this);
                 newGameAction.retriveNarration(narration);
 
                 // System.out.println(newGameAction.g);
@@ -207,7 +208,7 @@ public class GameState {
 
         gameActionHashSet1.forEach(s-> System.out.println(s.getProduced()+ " <") );
 
-        this.setCurrentLocation(startingLocation);
+          this.setStartingLocation(startingLocation);
 
 
         setActionMap(actionsTree);
@@ -237,4 +238,34 @@ public class GameState {
     public void setActionMap(TreeMap<String, HashSet<GameAction>> actionMap) {
         this.actionMap = actionMap;
     }
+
+    public Storeroom getStoreroom() {
+        return storeroom;
+    }
+
+    public void setStoreroom(Storeroom storeroom) {
+        this.storeroom = storeroom;
+    }
+
+    public List<Player> getPlayerList() {
+        return playerList;
+    }
+
+    public void addPlayer(Player player) {
+        this.playerList.add(player);
+    }
+
+    public void setPlayerList(List<Player> playerList) {
+        this.playerList = playerList;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+
 }

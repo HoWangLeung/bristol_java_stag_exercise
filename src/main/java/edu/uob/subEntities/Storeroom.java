@@ -7,6 +7,7 @@ public class Storeroom {
 
     private List<Artefact> artefacts = new ArrayList<>();
     private List<Furniture> furnitures = new ArrayList<>();
+    private List<Character> characters = new ArrayList<>();
 
 
 
@@ -36,7 +37,16 @@ public class Storeroom {
     public void addFurniture(Furniture furniture) {
         this.furnitures.add(furniture);
     }
+    public void addCharacter(Character character) {
+        this.characters.add(character);
+    }
 
+    public List<Character> getCharacters() {
+        return characters;
+    }
 
+    public void setCharacters(List<Character> characters) {
+        this.characters = characters;
+    }
 
 }

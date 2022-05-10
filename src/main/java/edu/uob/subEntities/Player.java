@@ -8,6 +8,9 @@ import java.util.List;
 
 public class Player extends GameEntity {
     private List<Artefact> inventory = new ArrayList<>();
+    private Location currentLocation;
+
+
     public Player(String name, String description) {
         super(name, description);
     }
@@ -22,6 +25,14 @@ public class Player extends GameEntity {
 
     public void setInventory(List<Artefact> inventory) {
         this.inventory = inventory;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
     }
 
     @Override

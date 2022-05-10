@@ -5,6 +5,7 @@ import edu.uob.GameAction;
 import edu.uob.GameState;
 import edu.uob.subEntities.*;
 
+import edu.uob.subEntities.Character;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,9 +71,7 @@ public class CommandHandler {
 
 
         producedList.forEach(prod -> {
-//            //is it a location
-//            boolean isLocation = allLocations.stream()
-//                    .filter(location -> location.equals(prod.getName())).collect(Collectors.toList()).size() > 0;
+
 
             String name = prod.getName();
             String shape = prod.getShape();
@@ -80,7 +79,7 @@ public class CommandHandler {
             System.out.println("produced name=" + name + ",shape=" + shape);
 
             if (shape.equalsIgnoreCase("none")) { //it must be a location
-                Location location = gameState.getLocationMap().get(gameState.getCurrentLocation().getName());
+                Location location = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName());
                 List<Path> pathsToUpdate = location.getPaths();
                 pathsToUpdate.add(new Path(name, gameState.getLocationMap().get(name).getDescription()));
                 location.setPaths(pathsToUpdate);
@@ -93,7 +92,7 @@ public class CommandHandler {
                     List<Artefact> targetArtefactList = gameState.getLocationMap()
                             .get(location).getArefacts()
                             .stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
-                    //    System.out.println("targetArtefactList size="+targetArtefactList.size());
+
                     if (targetArtefactList.size() > 0) {
                         System.out.println("found any?");
                         artefacts.add(targetArtefactList.get(0));
@@ -103,7 +102,19 @@ public class CommandHandler {
             }
 
             if (shape.equals("ellipse")) { //Character
-//                gameState.getLocationMap().get(gameState.getCurrentLocation().getName())
+                Set<Character> characters = new HashSet<>();
+                allLocations.forEach(location -> {
+                    List<Character> targetCharacterList = gameState.getLocationMap()
+                            .get(location).getCharacters()
+                            .stream().filter(character -> character.getName().equals(name)).collect(Collectors.toList());
+
+                    if (targetCharacterList.size() > 0) {
+                        System.out.println("found any?");
+                        characters.add(targetCharacterList.get(0));
+                    }
+                });
+                characters.forEach(character -> gameState.getLocationMap()
+                        .get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getCharacters().add(character));
 
 
             }
@@ -120,6 +131,7 @@ public class CommandHandler {
 
         targetActions.forEach(targetAction -> {
             targetAction.getConsumed().forEach(consume -> requiredConsume.add((Consumed) consume));
+
         });
         requiredConsume.forEach(consumed -> System.out.println(consumed.getName() + "<required consume>" + consumed.getShape()));
 
@@ -128,6 +140,7 @@ public class CommandHandler {
 
 
         for (int i = 0; i < player.getInventory().size(); i++) {
+
             if (consumeMap.containsKey(player.getInventory().get(i).getName())) {
                 List<Artefact> newInventory = player.getInventory();
                 Artefact tobeRemoved = player.getInventory().get(i);
@@ -135,17 +148,33 @@ public class CommandHandler {
                 ;
                 player.setInventory(newInventory);
             }
+
         }
 
         requiredConsume.forEach(consumed -> {
+
+            System.out.println("consumedconsumed="+consumed.getName());
+
             if (consumed.getShape().equals("hexagon")) { //furniture
-                Furniture tobeRemoved = gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getFurnitures()
+                Furniture tobeRemoved = gameState.getLocationMap().get(gameState.getCurrentPlayer().getName()).getFurnitures()
                         .stream().filter(furniture -> furniture.getName().equals(consumed.getName()))
                         .collect(Collectors.toList()).get(0);
-                gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getFurnitures().remove(tobeRemoved);
-
-
+                gameState.getLocationMap().get(gameState.getCurrentPlayer().getName()).getFurnitures().remove(tobeRemoved);
             }
+
+//            if (consumed.getShape().equals("diamond")) { //artefact
+//                System.out.println("shape=diamond??");
+//
+//                List<Artefact> artefactTobeRemovedList = gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getArefacts()
+//                        .stream().filter(artefact -> artefact.getName().equals(consumed.getName()))
+//                        .collect(Collectors.toList());
+//
+//                if(artefactTobeRemovedList.size()>0)
+//                gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getArefacts().remove(artefactTobeRemovedList.get(0));
+//
+//            }
+
+
         });
 
 
@@ -170,7 +199,7 @@ public class CommandHandler {
             System.out.println("required....>>>>>" + requiredSubjects.get(i).getName() + ":" + requiredSubjects.get(i).getShape());
 
             if (shape.equalsIgnoreCase("hexagon")) { //furnitures
-                existInFurnitrue = gameState.getCurrentLocation().getFurnitures()
+                existInFurnitrue = gameState.getCurrentPlayer().getCurrentLocation().getFurnitures()
                         .stream().filter(d -> d.getName().equals(subjectName)).collect(Collectors.toList()).size() > 0;
 
 
@@ -181,7 +210,7 @@ public class CommandHandler {
 
             } else if (shape.equalsIgnoreCase("ellipse")) {//characters
 
-                existInCharacter = gameState.getCurrentLocation().getCharacters()
+                existInCharacter = gameState.getCurrentPlayer().getCurrentLocation().getCharacters()
                         .stream().filter(d -> d.getName().equals(subjectName)).collect(Collectors.toList()).size() > 0;
 
             }
@@ -226,7 +255,7 @@ public class CommandHandler {
             case "get":
 
                 String target = commands.get(1);
-                List<Artefact> targetArtefect = gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getArefacts().stream().filter(artefact -> artefact.getName().equalsIgnoreCase(target)).collect(Collectors.toList());
+                List<Artefact> targetArtefect = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getArefacts().stream().filter(artefact -> artefact.getName().equalsIgnoreCase(target)).collect(Collectors.toList());
 
 
                 if (targetArtefect.size() > 0) {
@@ -251,6 +280,7 @@ public class CommandHandler {
                 }
 
                 player.getInventory().remove(filtered.get(0));
+                gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getArefacts().add(filtered.get(0));
 
 
                 return "You have dropped ";
@@ -259,55 +289,60 @@ public class CommandHandler {
                 stringBuilder = new StringBuilder();
                 target = commands.get(1);
                 System.out.println("target goto=" + target);
-                gameState.setCurrentLocation(gameState.getLocationMap().get(target));
-                currentLocation = gameState.getCurrentLocation();
-                description = gameState.getCurrentLocation().getDescription();
+                gameState.getCurrentPlayer().setCurrentLocation(gameState.getLocationMap().get(target));
+                currentLocation = gameState.getCurrentPlayer().getCurrentLocation();
+                description = gameState.getCurrentPlayer().getCurrentLocation().getDescription();
                 locationDescription = "You are in " + description + " You can see:\n";
                 stringBuilder.append(locationDescription);
-                gameState.getCurrentLocation().getArefacts().forEach(d -> stringBuilder.append(d.getDescription() + "\n"));
-                gameState.getCurrentLocation().getFurnitures().forEach(d -> stringBuilder.append(d.getDescription() + "\n"));
+                gameState.getCurrentPlayer().getCurrentLocation().getArefacts().forEach(d -> stringBuilder.append(d.getDescription() + "\n"));
+                gameState.getCurrentPlayer().getCurrentLocation().getFurnitures().forEach(d -> stringBuilder.append(d.getDescription() + "\n"));
 
                 if (currentLocation.getCharacters().size() > 0) {
                     currentLocation.getCharacters().forEach(character -> stringBuilder.append(character.getDescription() + "\n"));
                 }
 
                 stringBuilder.append("You can access from here:\n");
-                gameState.getCurrentLocation().getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
+                gameState.getCurrentPlayer().getCurrentLocation().getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
 
 
                 return stringBuilder.toString();
 
             case "look":
                 System.out.println("look...");
-                stringBuilder = new StringBuilder();
-                currentLocation = gameState.getLocationMap().get(gameState.getCurrentLocation().getName());
-                name = currentLocation.getName();
-                description = currentLocation.getDescription();
-                locationDescription = "You are in " + description + " You can see:\n";
-                stringBuilder.append(locationDescription);
 
-                System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
+                if(gameState.getPlayerList().size()==1){
+                    stringBuilder = new StringBuilder();
+                    currentLocation = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName());
+                    name = currentLocation.getName();
+                    description = currentLocation.getDescription();
+                    locationDescription = "You are in " + description + " You can see:\n";
+                    stringBuilder.append(locationDescription);
+
+                    System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
 
 
-                if (currentLocation.getArefacts().size() > 0) {
-                    System.out.println("has art");
-                    currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
+                    if (currentLocation.getArefacts().size() > 0) {
+                        System.out.println("has art");
+                        currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
+                    }
+
+                    if (currentLocation.getFurnitures().size() > 0) {
+                        currentLocation.getFurnitures().forEach(furniture -> stringBuilder.append(furniture.getDescription() + "\n"));
+                    }
+
+                    if (currentLocation.getCharacters().size() > 0) {
+                        currentLocation.getCharacters().forEach(character -> stringBuilder.append(character.getDescription() + "\n"));
+                    }
+
+                    stringBuilder.append("You can access from here:\n");
+                    currentLocation.getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
+                    return stringBuilder.toString();
+                }else if(gameState.getPlayerList().size()>1){
+
                 }
 
-                if (currentLocation.getFurnitures().size() > 0) {
-                    currentLocation.getFurnitures().forEach(furniture -> stringBuilder.append(furniture.getDescription() + "\n"));
-                }
 
-                if (currentLocation.getCharacters().size() > 0) {
-                    currentLocation.getCharacters().forEach(character -> stringBuilder.append(character.getDescription() + "\n"));
-                }
-
-
-                stringBuilder.append("You can access from here:\n");
-                currentLocation.getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
-
-
-                return stringBuilder.toString();
+                return "";
 
             default:
                 System.out.println("nothing match...");

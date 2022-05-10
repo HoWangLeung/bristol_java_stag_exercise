@@ -4,10 +4,8 @@ import edu.uob.actions.Actions;
 import edu.uob.actions.Consumed;
 import edu.uob.actions.Produced;
 import edu.uob.actions.Subject;
-import edu.uob.subEntities.Artefact;
+import edu.uob.subEntities.*;
 import edu.uob.subEntities.Character;
-import edu.uob.subEntities.Furniture;
-import edu.uob.subEntities.Location;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -84,7 +82,7 @@ public class GameAction
 
     }
 
-    public void retriveProduced(Element produced, TreeMap<String, Location> locationMap){
+    public void retriveProduced(Element produced, TreeMap<String, Location> locationMap, GameState gameState){
 
         int count =0;
         for(int ii =0;ii<produced.getChildNodes().getLength();ii++){
@@ -94,13 +92,30 @@ public class GameAction
         }
         for(int i = 0 ;i<count;i++){
             String entity = produced.getElementsByTagName("entity").item(i).getTextContent();
-            System.out.println("entity====" + entity);
             Produced producedEntity = new Produced(entity);
             this.produced.add(producedEntity);
         }
 
        this.mapEntityShape(locationMap,  this.produced);
-//        this.produced.forEach(p-> System.out.println("=====>" +p.getName() + ":" +p.getShape()));
+        storeToStoreRoom(gameState,this.produced);
+
+    }
+
+    private void storeToStoreRoom(GameState gameState, List<Actions> produced){
+
+        this.produced.forEach(prod->{
+
+            if(prod.getShape() !=null && prod.getShape().equals("diamond")){
+              gameState.getStoreroom().addArtefact(new Artefact(prod.getName(),""));
+            }
+            if(prod.getShape() !=null &&  prod.getShape().equals("hexagon")){
+                gameState.getStoreroom().addFurniture(new Furniture(prod.getName(),""));
+            }
+            if(prod.getShape() !=null &&  prod.getShape().equals("ellipse")){
+                gameState.getStoreroom().addCharacter(new Character(prod.getName(),""));
+            }
+
+        });
 
     }
 
@@ -108,7 +123,7 @@ public class GameAction
         //map the shape
         HashMap<String, Actions> entityMap= new HashMap<>();
         for(int i =0;i<actionEntity.size();i++){
-            System.out.println("puttttt");
+
             entityMap.put(actionEntity.get(i).getName(),actionEntity.get(i));
         }
 

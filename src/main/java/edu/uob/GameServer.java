@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public final class GameServer {
 
     private static final char END_OF_TRANSMISSION = 4;
-    private List<Player> playerList = new ArrayList<>();
+
 
     private Player currentPlayer;
     GameState gameState = new GameState();
@@ -64,34 +64,6 @@ public final class GameServer {
         gameState.loadActions(stringLocationTreeMap, actionsFile);
 
 
-        handleCommand("David: look");
-        handleCommand("David: get axe");
-        handleCommand("David: get coin");
-
-//       handleCommand("David: get potion");
-////      handleCommand("David: get potion");
-       handleCommand("David: goto forest");
-        handleCommand("David: get key");
-////      handleCommand("David: inv");
-//        handleCommand("David: chop tree with axe");
-//        // handleCommand("David: get key");
-//        handleCommand("David: drink potion");
-//        handleCommand("David: inv");
-       handleCommand("David: goto cabin");
-//      handleCommand("David: inv");
-     handleCommand("David: unlock trapdoor ");
-      handleCommand("David: look ");
-     handleCommand("David: goto cellar ");
-       handleCommand("David: look");
-        handleCommand("David: pay elf");
-
-        handleCommand("David: goto forest");
-        handleCommand("David: goto riverbank");
-        handleCommand("David: get horn");
-        handleCommand("David: look");
-        handleCommand("David: blow horn");
-        handleCommand("David: look");
-
 
     }
 
@@ -110,21 +82,24 @@ public final class GameServer {
 
             String playerName = splitbyColon.get(0);
             System.out.println("playername = " + playerName);
-            playerList.forEach(player -> System.out.println("currentplayer: " + player.getName()));
+            gameState.getPlayerList().forEach(player -> System.out.println("currentplayer: " + player.getName()));
 
-            boolean isPlayerExist = playerList.stream().filter(player -> player.getName().equals(playerName)).collect(Collectors.toList()).size() > 0;
+            boolean isPlayerExist = gameState.getPlayerList().stream().filter(player -> player.getName().equals(playerName)).collect(Collectors.toList()).size() > 0;
 
             System.out.println("isPlayerExist=" + isPlayerExist);
 
             if (!isPlayerExist) {
                 currentPlayer = new Player(playerName, "");
-                this.playerList.add(currentPlayer);
+                this.gameState.getPlayerList().add(currentPlayer);
+
+                gameState.setCurrentPlayer(currentPlayer);
+                gameState.getCurrentPlayer().setCurrentLocation(gameState.getStartingLocation());
             } else {
-                currentPlayer = playerList.stream().filter(p -> p.getName().equals(playerName)).collect(Collectors.toList()).get(0);
+                currentPlayer = gameState.getPlayerList().stream().filter(p -> p.getName().equals(playerName)).collect(Collectors.toList()).get(0);
+                gameState.setCurrentPlayer(currentPlayer);
+                gameState.getCurrentPlayer().setCurrentLocation(gameState.getStartingLocation());
             }
 
-
-            System.out.println(playerList);
 
 
             List<String> commands = new ArrayList<>(Arrays.asList(splitbyColon.get(1).trim().split(" ")));
@@ -132,7 +107,7 @@ public final class GameServer {
             System.out.println(commands + " <commands");
 //        commands.forEach(s-> System.out.println(s));
             String basicResponse = commandHandler.checkBasicCommand(commands, currentPlayer, gameState);
-            System.out.println("basicResponse===" + basicResponse);
+
 
             currentPlayer.getInventory().forEach(d -> System.out.println(d.getName() + " <<<< got"));
 
@@ -213,11 +188,5 @@ public final class GameServer {
         }
     }
 
-    public List<Player> getPlayerList() {
-        return playerList;
-    }
 
-    public void addPlayer(Player player) {
-        this.playerList.add(player);
-    }
 }
