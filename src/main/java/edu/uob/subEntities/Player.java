@@ -9,6 +9,7 @@ import java.util.List;
 public class Player extends GameEntity {
     private List<Artefact> inventory = new ArrayList<>();
     private Location currentLocation;
+    private int health=3;
 
 
     public Player(String name, String description) {
@@ -33,6 +34,14 @@ public class Player extends GameEntity {
 
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
     }
 
     @Override

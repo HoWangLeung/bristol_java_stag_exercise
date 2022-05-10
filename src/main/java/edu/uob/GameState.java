@@ -32,6 +32,9 @@ public class GameState {
     private Storeroom storeroom = new Storeroom();
     private List<Player> playerList = new ArrayList<>();
     private Player currentPlayer;
+    private String response;
+
+
 
     public GameState() {
 
@@ -267,5 +270,12 @@ public class GameState {
         this.currentPlayer = currentPlayer;
     }
 
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
 }

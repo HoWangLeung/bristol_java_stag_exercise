@@ -69,9 +69,10 @@ final class BasicCommandTests {
 
   @Test
   void getKeyCheckInventory() {
-    server.handleCommand("player 1: goto forest");
-   server.handleCommand("player 1: get key");
-    String response = server.handleCommand("player 1: inv");
+     server.handleCommand("player 1: goto forest");
+  String getKeyResponse =  server.handleCommand("player 1:get key");
+   System.out.println("getKeyResponse "+getKeyResponse);
+     String response = server.handleCommand("player 1: inv");
     assertTrue(response.contains("key"));
   }
 

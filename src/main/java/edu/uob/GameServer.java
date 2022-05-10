@@ -97,7 +97,7 @@ public final class GameServer {
             } else {
                 currentPlayer = gameState.getPlayerList().stream().filter(p -> p.getName().equals(playerName)).collect(Collectors.toList()).get(0);
                 gameState.setCurrentPlayer(currentPlayer);
-                gameState.getCurrentPlayer().setCurrentLocation(gameState.getStartingLocation());
+
             }
 
 
@@ -106,29 +106,26 @@ public final class GameServer {
 
             System.out.println(commands + " <commands");
 //        commands.forEach(s-> System.out.println(s));
-            String basicResponse = commandHandler.checkBasicCommand(commands, currentPlayer, gameState);
+           commandHandler.checkBasicCommand(commands, currentPlayer, gameState);
 
 
-            currentPlayer.getInventory().forEach(d -> System.out.println(d.getName() + " <<<< got"));
+//            currentPlayer.getInventory().forEach(d -> System.out.println(d.getName() + " <<<< got"));
 
-            if (basicResponse != null) {
+            if (gameState.getResponse() != null) {
                 System.out.println("will return:");
-                System.out.println(basicResponse);
+                System.out.println(gameState.getResponse());
                 System.out.println("====================================================================================");
-                return basicResponse;
+                return gameState.getResponse();
             }
 
-            List<String> triggerResult = commandHandler.checkTrigger(commands, currentPlayer, gameState);
-
-            if (triggerResult.size() > 0) {
-                System.out.println("will return:");
-                System.out.println(triggerResult.toString());
-                return triggerResult.toString();
-            }
+             commandHandler.checkTrigger(commands, currentPlayer, gameState);
 
 
-            System.out.println("will return: Thank you for your message, nothing\n");
-            return "Thanks for your message: " + command;
+
+
+            System.out.println("This will return:\n"+gameState.getResponse());
+            System.out.println("====================================================================================");
+            return gameState.getResponse();
         } catch (GameException e) {
             return e.getLocalizedMessage();
         }

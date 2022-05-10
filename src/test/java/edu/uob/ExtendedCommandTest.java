@@ -85,11 +85,77 @@ final class ExtendedCommandTest {
 
          server.handleCommand("player 2: get potion");
 
-        server.handleCommand("player 1: inv");
+         assertTrue( server.handleCommand("player 1: inv").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: inv").contains("potion"));
 
-        server.handleCommand("player 2: inv");
+
+
+        assertTrue( !server.handleCommand("player 2: inv").contains("axe"));
+        assertTrue( server.handleCommand("player 2: inv").contains("potion"));
+
 
         server.handleCommand("player 1: look");
+
+
+
+    }
+
+    @Test
+    void testMultiplayer2() {
+        server.handleCommand("player 1: get axe");
+        server.handleCommand("player 1: goto forest");
+        server.handleCommand("player 2: goto forest");
+        server.handleCommand("player 2: goto riverbank");
+
+        server.handleCommand("player 3: get potion");
+
+        server.handleCommand("player 2: look");
+
+        server.handleCommand("player 3: look");
+
+
+
+    }
+
+    @Test
+    void testHealth() {
+        server.handleCommand("player 1: get potion");
+        server.handleCommand("player 1: get axe");
+        server.handleCommand("player 1: get coin");
+        assertTrue(server.handleCommand("player 1: health").contains("3"));
+        assertTrue(server.handleCommand("player 1: health").contains("You"));
+
+        server.handleCommand("player 1: goto forest");
+        server.handleCommand("player 1: get key");
+        server.handleCommand("player 1: goto cabin");
+        server.handleCommand("player 1: unlock key");
+        server.handleCommand("player 1: goto cellar");
+
+        server.handleCommand("player 1: attack elf");
+
+        assertTrue(server.handleCommand("player 1: health").contains("2"));
+        server.handleCommand("player 1: drink potion");
+        assertTrue(server.handleCommand("player 1: health").contains("3"));
+
+        server.handleCommand("player 1: attack elf");
+        server.handleCommand("player 1: attack elf");
+        assertTrue( server.handleCommand("player 1: inv").contains("axe"));
+        assertTrue( server.handleCommand("player 1: inv").contains("coin"));
+
+        assertTrue( !server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: look").contains("coin"));
+
+       server.handleCommand("player 1: attack elf");
+        assertTrue( !server.handleCommand("player 1: inv").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: inv").contains("coin"));
+
+        assertTrue( !server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: look").contains("coin"));
+
+
+        server.handleCommand("player 1: goto cellar");
+        assertTrue( server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( server.handleCommand("player 1: look").contains("coin"));
 
     }
 
