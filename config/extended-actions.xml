@@ -20,6 +20,22 @@
 
     <action>
         <triggers>
+            <keyword>attack</keyword>
+            <keyword>fight</keyword>
+        </triggers>
+        <subjects>
+            <entity>lumberjack</entity>
+        </subjects>
+        <consumed>
+            <entity>lumberjack</entity>
+        </consumed>
+        <produced>
+        </produced>
+        <narration>Removed lumberjack</narration>
+    </action>
+
+    <action>
+        <triggers>
             <keyword>open</keyword>
             <keyword>unlock</keyword>
         </triggers>
@@ -49,6 +65,7 @@
         </consumed>
         <produced>
             <entity>log</entity>
+            <entity>potion</entity>
         </produced>
         <narration>You cut down the tree with the axe</narration>
     </action>
@@ -82,6 +99,7 @@
             <entity>health</entity>
         </consumed>
         <produced>
+
         </produced>
         <narration>You attack the elf, but he fights back and you lose some health</narration>
     </action>

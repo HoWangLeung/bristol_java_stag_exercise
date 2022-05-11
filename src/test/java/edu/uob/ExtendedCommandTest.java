@@ -46,48 +46,52 @@ final class ExtendedCommandTest {
 
         assertTrue(lookCabin.contains("cellar"));
         server.handleCommand("player 1: goto cellar");
+
+        assertTrue(server.handleCommand("player 1: inv").contains("coin"));
         server.handleCommand("player 1: pay elf");
-        assertTrue(server.handleCommand("player 1: look").contains("shovel"));
-        assertTrue(server.handleCommand("player 1: get shovel").contains("shovel"));
-        String invShovel =  server.handleCommand("player 1: inv");
-        assertTrue(invShovel.contains("shovel"));
-        assertTrue(!invShovel.contains("coin"));
+        assertTrue(!server.handleCommand("player 1: inv").contains("coin"));
 
-
-         server.handleCommand("player 1: goto riverbank");
-         server.handleCommand("player 1: bridge river with log");
-
-        String inv2 = server.handleCommand("player 1: inv");
-        assertTrue(!inv2.contains("log"));
-
-        String look2 = server.handleCommand("player 1: look");
-        assertTrue(look2.contains("clearing"));
-
-        String gotoClearing = server.handleCommand("player 1: goto clearing");
-        assertTrue(gotoClearing.contains("riverbank"));
-
-        server.handleCommand("player 1: look");
-        assertTrue(gotoClearing.contains("soil"));
-
-        String digWithShovel = server.handleCommand("player 1: dig with shovel");
-
-       assertTrue(!server.handleCommand("player 1: inv").contains("gold"));
-
-      String lookAfterDig = server.handleCommand("player 1: look");
-
-         assertTrue(!lookAfterDig.contains("soil"));
-        assertTrue(lookAfterDig.contains("gold"));
-
-        assertTrue(server.handleCommand("player 1: get gold").contains("gold"));
-        assertTrue(server.handleCommand("player 1: inv").contains("gold"));
-
-
-        String digWithShovelAgainResult = server.handleCommand("player 1: dig with shovel");
-        assertTrue(digWithShovelAgainResult.contains("You do not have the require item"));
-
-         server.handleCommand("player 1: drop shovel");
-
-        String lookAfterDrop = server.handleCommand("player 1: look");
+//        assertTrue(server.handleCommand("player 1: look").contains("shovel"));
+//        assertTrue(server.handleCommand("player 1: get shovel").contains("shovel"));
+//        String invShovel =  server.handleCommand("player 1: inv");
+//        assertTrue(invShovel.contains("shovel"));
+//        assertTrue(!invShovel.contains("coin"));
+//
+//
+//         server.handleCommand("player 1: goto riverbank");
+//         server.handleCommand("player 1: bridge river with log");
+//
+//        String inv2 = server.handleCommand("player 1: inv");
+//        assertTrue(!inv2.contains("log"));
+//
+//        String look2 = server.handleCommand("player 1: look");
+//        assertTrue(look2.contains("clearing"));
+//
+//        String gotoClearing = server.handleCommand("player 1: goto clearing");
+//        assertTrue(gotoClearing.contains("riverbank"));
+//
+//        server.handleCommand("player 1: look");
+//        assertTrue(gotoClearing.contains("soil"));
+//
+//        String digWithShovel = server.handleCommand("player 1: dig with shovel");
+//
+//       assertTrue(!server.handleCommand("player 1: inv").contains("gold"));
+//
+//      String lookAfterDig = server.handleCommand("player 1: look");
+//
+//         assertTrue(!lookAfterDig.contains("soil"));
+//        assertTrue(lookAfterDig.contains("gold"));
+//
+//        assertTrue(server.handleCommand("player 1: get gold").contains("gold"));
+//        assertTrue(server.handleCommand("player 1: inv").contains("gold"));
+//
+//
+//        String digWithShovelAgainResult = server.handleCommand("player 1: dig with shovel");
+//        assertTrue(digWithShovelAgainResult.contains("You do not have the require item"));
+//
+//         server.handleCommand("player 1: drop shovel");
+//
+//        String lookAfterDrop = server.handleCommand("player 1: look");
     }
     @Test
     void testMultiplayer() {
@@ -160,7 +164,11 @@ final class ExtendedCommandTest {
         server.handleCommand("player 1: attack elf");
 
         assertTrue(server.handleCommand("player 1: health").contains("2"));
+
+        assertTrue(server.handleCommand("player 1: inv").contains("potion"));
         server.handleCommand("player 1: drink potion");
+        assertTrue(!server.handleCommand("player 1: inv").contains("potion"));
+
         assertTrue(server.handleCommand("player 1: health").contains("3"));
 
         server.handleCommand("player 1: attack elf");
@@ -189,8 +197,44 @@ final class ExtendedCommandTest {
     void openBox() {
         assertTrue(server.handleCommand("player 1: open box").contains("opened"));
 
+    }
+    @Test
+    void notenoughInfo() {
+        assertTrue(server.handleCommand("player 1: open ").contains("Not enough info"));
 
     }
+
+    @Test
+    void invalid1() {
+        assertTrue(server.handleCommand("player 1: a ").contains("ERROR"));
+
+    }
+
+    @Test
+    void blowhorn() {
+        server.handleCommand("player 1: goto forest ");
+        server.handleCommand("player 1: goto riverbank ");
+        server.handleCommand("player 1: get horn ");
+        server.handleCommand("player 1: inv ");
+        assertTrue(!server.handleCommand("player 1: look ").contains("cutter"));
+        server.handleCommand("player 1: blow horn ");
+        assertTrue(server.handleCommand("player 1: look ").contains("cutter"));
+        server.handleCommand("player 1: attack lumberjack ");
+        server.handleCommand("player 1: look ");
+    }
+
+    @Test
+    void producePotion() {
+        server.handleCommand("player 1: get axe ");
+        server.handleCommand("player 1: get potion ");
+        server.handleCommand("player 1: drink potion ");
+        server.handleCommand("player 1: inv");
+        server.handleCommand("player 1: goto forest ");
+        server.handleCommand("player 1: chop tree ");
+        server.handleCommand("player 1: look ");
+
+    }
+
 
 
 

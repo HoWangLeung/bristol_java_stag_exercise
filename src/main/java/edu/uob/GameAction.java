@@ -97,27 +97,10 @@ public class GameAction
         }
 
        this.mapEntityShape(locationMap,  this.produced);
-//        storeToStoreRoom(gameState,this.produced);
+
 
     }
 
-//    private void storeToStoreRoom(GameState gameState, List<Actions> produced){
-//
-//        this.produced.forEach(prod->{
-//
-//            if(prod.getShape() !=null && prod.getShape().equals("diamond")){
-//              gameState.getStoreroom().addArtefact(new Artefact(prod.getName(),""));
-//            }
-//            if(prod.getShape() !=null &&  prod.getShape().equals("hexagon")){
-//                gameState.getStoreroom().addFurniture(new Furniture(prod.getName(),""));
-//            }
-//            if(prod.getShape() !=null &&  prod.getShape().equals("ellipse")){
-//                gameState.getStoreroom().addCharacter(new Character(prod.getName(),""));
-//            }
-//
-//        });
-//
-//    }
 
     private void mapEntityShape(TreeMap<String, Location> locationMap, List<Actions> actionEntity) {
         //map the shape

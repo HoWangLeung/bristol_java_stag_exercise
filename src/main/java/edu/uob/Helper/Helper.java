@@ -1,5 +1,6 @@
 package edu.uob.Helper;
 
+import edu.uob.Exception.GameException;
 import edu.uob.GameAction;
 import edu.uob.GameState;
 import edu.uob.subEntities.Location;
@@ -36,13 +37,17 @@ public class Helper {
         }
     }
 
-    public <T> List<T> findIntersection(List<T> list1, List<T> list2) {
+    public <T> List<T> findIntersection(List<T> list1, List<T> list2) throws GameException {
         List<T> list = new ArrayList<T>();
 
         for (T t : list1) {
             if (list2.contains(t)) {
                 list.add(t);
             }
+        }
+
+        if (list.size() == 0) {
+            throw new GameException("cannot recognize the command");
         }
 
         return list;

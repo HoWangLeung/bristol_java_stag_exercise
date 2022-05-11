@@ -16,39 +16,38 @@ public class CommandHandler {
     private GameAction currentAction = new GameAction();
 
 
-    public void checkTrigger(List<String> commands, GameState gameState) {
-        List<String> intersection = new Helper().findIntersection(commands, new ArrayList<>(gameState.getActionMap().keySet()));
+    public void checkTrigger(List<String> commands, GameState gameState) throws GameException {
 
-        List<Consumed> requiredConsume = new ArrayList<>();
+
         List<Subject> requiredSubjects = new ArrayList<>();
-        List<Produced> producedList = new ArrayList<>();
-        List<String> allLocations = new ArrayList<>(gameState.getLocationMap().keySet());
-        List<String> results = new ArrayList<>();
         Player currentPlayer = gameState.getCurrentPlayer();
-        GameAction targetAction = new GameAction();
 
-        if (intersection.size() == 0) {
-            try {
-                throw new Exception("something wrong1");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        selectAction(gameState,commands,requiredSubjects);
+
+        //check required subjects (item)
+        if (!checkRequiredSubjects( requiredSubjects, currentPlayer, gameState)) {
+            gameState.setResponse("You do not have the require item");
+            return;
         }
 
+
+        handleConsume(  currentPlayer, gameState);
+
+        handleProduced(gameState);
+
+
+    }
+
+    private void selectAction(GameState gameState, List<String> commands, List<Subject> requiredSubjects) throws GameException {
+
+        List<String> intersection = new Helper().findIntersection(commands, new ArrayList<>(gameState.getActionMap().keySet()));
         String triggerword = intersection.get(0);
 
-        System.out.println("triggerword===" + triggerword);
         HashSet<GameAction> targetActions = gameState.getActionMap().get(triggerword);
-        System.out.println("targetActions size: "+targetActions.size());
-        System.out.println(gameState.getActionMap());
-
-
         targetActions.forEach(eachAction -> {
             for (int i = 0; i < eachAction.getSubjects().size(); i++) {
-                System.out.println("targetAction.getSubjects().get(i) = " +eachAction.getSubjects().get(i).getName() + " vs " +commands);
-
                 if (commands.contains(eachAction.getSubjects().get(i).getName())) {
-                    System.out.println(eachAction.getSubjects().get(i).getName() + "<<<<>>>>>");
                     requiredSubjects.add((Subject) eachAction.getSubjects().get(i));
                     setCurrentAction(eachAction);
                 }
@@ -56,42 +55,22 @@ public class CommandHandler {
         });
 
         if (requiredSubjects.size() == 0) {
-            System.out.println("subject size =000000");
+            throw new GameException("Not enough info");
         }
-        System.out.println("subjects="+requiredSubjects);
+    }
 
-        //check required subjects (item)
-        if (!checkRequiredSubjects( requiredSubjects, currentPlayer, gameState)) {
-            System.out.println("Does not have required subjects");
-            results.add("You do not have the require item");
-            gameState.setResponse(results.get(0));
-            return;
+    private void handleProduced(GameState gameState) {
+        Player currentPlayer = gameState.getCurrentPlayer();
+        List<Produced> producedList = new ArrayList<>();
+
+        for (int i = 0; i < getCurrentAction().getProduced().size(); i++) {
+            producedList.add((Produced) getCurrentAction().getProduced().get(i));
         }
-
-
-        //handle consume
-        handleConsume(targetActions, requiredConsume, currentPlayer, gameState);
-
-
-        //handle produced
-        targetActions.forEach(action -> {
-            System.out.println("HELLO");
-            System.out.println(action.getSubjects().get(0).getName());
-            for (int i = 0; i < action.getProduced().size(); i++) {
-                producedList.add((Produced) action.getProduced().get(i));
-            }
-            gameState.setResponse(action.getNarration());
-        });
-
+        gameState.setResponse(getCurrentAction().getNarration());
 
         producedList.forEach(prod -> {
-
-
             String name = prod.getName();
             String shape = prod.getShape();
-
-            System.out.println("produced name=" + name + ",shape=" + shape);
-
             if (name.equalsIgnoreCase("health")) { //
                 if (currentPlayer.getHealth() < 3)
                     currentPlayer.setHealth(currentPlayer.getHealth() + 1);
@@ -104,38 +83,27 @@ public class CommandHandler {
                 gameState.getLocationMap().put(location.getName(), location);
             } else if (shape.equals("diamond")) { //
                 Set<Artefact> artefacts = new HashSet<>();
-                allLocations.forEach(location -> {
-                    List<Artefact> targetArtefactList = gameState.getLocationMap()
-                            .get(location).getArefacts()
-                            .stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
 
-                    if (targetArtefactList.size() > 0) {
-                        System.out.println("found any?");
-                        artefacts.add(targetArtefactList.get(0));
-                    }
-                });
+                List<Artefact> targetArtefactList = gameState.getStoreroom().getArtefacts().stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
+                if (targetArtefactList.size() > 0) {
+                    System.out.println("found any?");
+                    artefacts.add(targetArtefactList.get(0));
+                }
 
-                artefacts.forEach(artefact -> {
-                    System.out.println("*******"+artefact.getName());
-                    gameState.getLocationMap().get(currentPlayer.getCurrentLocation().getName()).addArefacts(artefact);
-                });
-
-
-
+                artefacts.forEach(artefact -> gameState.getLocationMap().get(currentPlayer.getCurrentLocation().getName()).addArefacts(artefact));
 
 
             } else if (shape.equals("ellipse")) { //Character
                 Set<Character> characters = new HashSet<>();
-                allLocations.forEach(location -> {
-                    List<Character> targetCharacterList = gameState.getLocationMap()
-                            .get(location).getCharacters()
+
+                    List<Character> targetCharacterList = gameState.getStoreroom().getCharacters()
                             .stream().filter(character -> character.getName().equals(name)).collect(Collectors.toList());
 
                     if (targetCharacterList.size() > 0) {
                         System.out.println("found any?");
                         characters.add(targetCharacterList.get(0));
                     }
-                });
+
                 characters.forEach(character -> gameState.getLocationMap()
                         .get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getCharacters().add(character));
 
@@ -144,19 +112,13 @@ public class CommandHandler {
 
 
         });
-
-
     }
 
-    private void handleConsume(HashSet<GameAction> targetActions, List<Consumed> requiredConsume, Player player, GameState gameState) {
-        Location currentLocation = gameState.getCurrentPlayer().getCurrentLocation();
+    private void handleConsume( Player player, GameState gameState) {
+        List<Consumed> requiredConsume = new ArrayList<>();
 
-        Player currentPlayer = gameState.getCurrentPlayer();
+        getCurrentAction().getConsumed().forEach(consume -> requiredConsume.add((Consumed) consume));
 
-        targetActions.forEach(targetAction -> {
-            targetAction.getConsumed().forEach(consume -> requiredConsume.add((Consumed) consume));
-
-        });
 
 
         HashMap<String, Consumed> consumeMap = new HashMap<>();
@@ -176,50 +138,45 @@ public class CommandHandler {
         }
 
         requiredConsume.forEach(consumed -> {
-
-            System.out.println("consumedconsumed=" + consumed.getName());
-            if (consumed.getName().equals("health")) { //health
-
-                System.out.println("do somthing");
-                currentPlayer.setHealth(currentPlayer.getHealth() - 1);
-                if (currentPlayer.getHealth() == 0) {
-                    System.out.println("drop all items and return to starting location");
-                    currentPlayer.getInventory().forEach(artefact -> {
-
-                        gameState.getLocationMap().get(currentLocation.getName()).getArefacts().add(artefact);
-
-                    });
-                    currentPlayer.getInventory().clear();
-                    gameState.setResponse("Your health is 0");
-                    currentPlayer.setCurrentLocation(gameState.getStartingLocation());
-
-
-                }
-
-
+            if (consumed.getName().equals("health")) {   //health
+               consumeHealth(gameState);
             } else if (consumed.getShape().equals("hexagon")) { //furniture
                 Furniture tobeRemoved = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getFurnitures()
                         .stream().filter(furniture -> furniture.getName().equals(consumed.getName()))
                         .collect(Collectors.toList()).get(0);
                 gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getFurnitures().remove(tobeRemoved);
+
+            } else if (consumed.getShape().equals("ellipse")) { //furniture
+                Character tobeRemovedChar = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getCharacters()
+                        .stream().filter(character -> character.getName().equals(consumed.getName()))
+                        .collect(Collectors.toList()).get(0);
+                gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getCharacters().remove(tobeRemovedChar);
             }
 
-//            if (consumed.getShape().equals("diamond")) { //artefact
-//                System.out.println("shape=diamond??");
-//
-//                List<Artefact> artefactTobeRemovedList = gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getArefacts()
-//                        .stream().filter(artefact -> artefact.getName().equals(consumed.getName()))
-//                        .collect(Collectors.toList());
-//
-//                if(artefactTobeRemovedList.size()>0)
-//                gameState.getLocationMap().get(gameState.getCurrentLocation().getName()).getArefacts().remove(artefactTobeRemovedList.get(0));
-//
-//            }
 
 
         });
 
 
+    }
+
+    private void consumeHealth(GameState gameState) {
+        Player currentPlayer = gameState.getCurrentPlayer();
+        Location currentLocation = gameState.getCurrentPlayer().getCurrentLocation();
+
+        currentPlayer.setHealth(currentPlayer.getHealth() - 1);
+        if (currentPlayer.getHealth() == 0) {
+            System.out.println("drop all items and return to starting location");
+            currentPlayer.getInventory().forEach(artefact -> {
+
+                gameState.getLocationMap().get(currentLocation.getName()).getArefacts().add(artefact);
+
+            });
+            currentPlayer.getInventory().clear();
+            gameState.setResponse("Your health is 0");
+            currentPlayer.setCurrentLocation(gameState.getStartingLocation());
+
+        }
     }
 
     private boolean checkRequiredSubjects( List<Subject> requiredSubjects, Player player, GameState gameState) {
