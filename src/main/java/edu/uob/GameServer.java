@@ -33,7 +33,7 @@ public final class GameServer {
     private static final char END_OF_TRANSMISSION = 4;
 
 
-    private Player currentPlayer;
+
     GameState gameState = new GameState();
 
     private CommandHandler commandHandler = new CommandHandler();
@@ -80,36 +80,12 @@ public final class GameServer {
 
             ArrayList<String> splitbyColon = new ArrayList<>(Arrays.asList(command.split(":")));
 
-            String playerName = splitbyColon.get(0);
-            System.out.println("playername = " + playerName);
-            gameState.getPlayerList().forEach(player -> System.out.println("currentplayer: " + player.getName()));
-
-            boolean isPlayerExist = gameState.getPlayerList().stream().filter(player -> player.getName().equals(playerName)).collect(Collectors.toList()).size() > 0;
-
-            System.out.println("isPlayerExist=" + isPlayerExist);
-
-            if (!isPlayerExist) {
-                currentPlayer = new Player(playerName, "");
-                this.gameState.getPlayerList().add(currentPlayer);
-
-                gameState.setCurrentPlayer(currentPlayer);
-                gameState.getCurrentPlayer().setCurrentLocation(gameState.getStartingLocation());
-            } else {
-                currentPlayer = gameState.getPlayerList().stream().filter(p -> p.getName().equals(playerName)).collect(Collectors.toList()).get(0);
-                gameState.setCurrentPlayer(currentPlayer);
-
-            }
-
-
+            helper.registerPlayer(gameState,command);
 
             List<String> commands = new ArrayList<>(Arrays.asList(splitbyColon.get(1).trim().split(" ")));
 
-            System.out.println(commands + " <commands");
-//        commands.forEach(s-> System.out.println(s));
-           commandHandler.checkBasicCommand(commands, currentPlayer, gameState);
+           commandHandler.checkBasicCommand(commands, gameState);
 
-
-//            currentPlayer.getInventory().forEach(d -> System.out.println(d.getName() + " <<<< got"));
 
             if (gameState.getResponse() != null) {
                 System.out.println("will return:");
@@ -118,7 +94,7 @@ public final class GameServer {
                 return gameState.getResponse();
             }
 
-             commandHandler.checkTrigger(commands, currentPlayer, gameState);
+             commandHandler.checkTrigger(commands, gameState);
 
 
 

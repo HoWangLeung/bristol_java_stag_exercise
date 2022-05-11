@@ -1,7 +1,11 @@
 package edu.uob.subEntities;
 
+import edu.uob.Exception.GameException;
+import edu.uob.GameState;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Storeroom {
 
@@ -13,6 +17,31 @@ public class Storeroom {
 
     public Storeroom() {
     }
+
+    public void getTargetArtefact(GameState gameState, List<String> commands) throws GameException {
+        System.out.println("curloc=="+gameState.getCurrentPlayer().getCurrentLocation().getName());
+        String target = commands.get(1);
+        String finalTarget1 = target;
+        List<Artefact> targetArtefect = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getArefacts().stream()
+                .filter(artefact -> artefact.getName().equalsIgnoreCase(finalTarget1)).collect(Collectors.toList());
+
+
+        if (targetArtefect.size() > 0) {
+            System.out.println("found");
+            gameState.getCurrentPlayer().addToInventory(targetArtefect.get(0));
+            gameState.removeItemFromLocation(targetArtefect.get(0));
+
+        } else {
+            System.out.println("no such");
+            throw new GameException("No such artefact in this location");
+        }
+        gameState.setResponse("You picked up a " + targetArtefect.get(0).getName());
+    }
+
+
+
+
+
 
     public List<Artefact> getArtefacts() {
         return artefacts;

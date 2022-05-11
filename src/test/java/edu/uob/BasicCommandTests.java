@@ -82,6 +82,21 @@ final class BasicCommandTests {
 
   }
 
+  @Test
+  void invalidInput1() {
+    assertTrue(server.handleCommand("player 1: look around").startsWith(err));
+
+    assertTrue(server.handleCommand("player 1: look").contains("room"));
+  }
+
+
+  @Test
+  void invalidInput2() {
+    assertTrue(server.handleCommand("player 1: health check").startsWith(err));
+    assertTrue(server.handleCommand("player 1:              look     ").contains("room"));
+  }
+
+
 
 
 

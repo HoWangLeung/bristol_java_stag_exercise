@@ -109,6 +109,7 @@ public class GameState {
                             Artefact artefact = new Artefact(a.getId().getId(),a.getAttribute("description"));
                             artefact.setShape("diamond");
                             newLocation.addArefacts(artefact);
+                            this.storeroom.addArtefact(artefact);
                         });
 
 
@@ -120,6 +121,7 @@ public class GameState {
                             Furniture furniture = new Furniture(f.getId().getId(),f.getAttribute("description"));
                             furniture.setShape("hexagon");
                             newLocation.addFurnitures(furniture);
+                            this.storeroom.addFurniture(furniture);
                         });
 
 
@@ -132,6 +134,7 @@ public class GameState {
                             Character character = new Character(c.getId().getId(),c.getAttribute("description"));
                             character.setShape("ellipse");
                             newLocation.addCharacter(character);
+                            this.storeroom.addCharacter(character);
                         });
                     }
 

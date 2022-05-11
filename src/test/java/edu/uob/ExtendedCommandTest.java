@@ -118,6 +118,22 @@ final class ExtendedCommandTest {
     }
 
     @Test
+    void getAxe() {
+        assertTrue(server.handleCommand("player 1: get axe").contains("You picked up"));
+        assertTrue(server.handleCommand("player 1: drop axe").contains("dropped"));
+        assertTrue(!server.handleCommand("player 1: inv").contains("axe"));
+
+    }
+
+    @Test
+    void gotoForest() {
+        assertTrue(server.handleCommand("player 1: look").contains("log cabin"));
+       assertTrue(server.handleCommand("player 1: goto forest").contains("in A deep dark forest"));
+
+
+    }
+
+    @Test
     void testHealth() {
         server.handleCommand("player 1: get potion");
         server.handleCommand("player 1: get axe");
