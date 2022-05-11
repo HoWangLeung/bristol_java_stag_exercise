@@ -18,6 +18,21 @@
         <narration>You unlock the door and see steps leading down into a cellar</narration>
     </action>
 
+    <action>
+        <triggers>
+            <keyword>open</keyword>
+            <keyword>unlock</keyword>
+        </triggers>
+        <subjects>
+            <entity>box</entity>
+        </subjects>
+        <consumed>
+
+        </consumed>
+        <produced>
+        </produced>
+        <narration>You opened a box</narration>
+    </action>
 
     <action>
         <triggers>

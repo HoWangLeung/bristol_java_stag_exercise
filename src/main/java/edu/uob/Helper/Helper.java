@@ -5,10 +5,7 @@ import edu.uob.GameState;
 import edu.uob.subEntities.Location;
 import edu.uob.subEntities.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Helper {
@@ -37,5 +34,17 @@ public class Helper {
             gameState.setCurrentPlayer(currentPlayer);
 
         }
+    }
+
+    public <T> List<T> findIntersection(List<T> list1, List<T> list2) {
+        List<T> list = new ArrayList<T>();
+
+        for (T t : list1) {
+            if (list2.contains(t)) {
+                list.add(t);
+            }
+        }
+
+        return list;
     }
 }

@@ -32,10 +32,13 @@ final class ExtendedCommandTest {
       server.handleCommand("player 1: goto forest");
         server.handleCommand("player 1: get key");
        server.handleCommand("player 1: chop tree");
+     assertTrue(server.handleCommand("player 1: look").contains("log"));
 
-        String lookForest  = server.handleCommand("player 1: look");
-        assertTrue(lookForest.contains("cabin"));
+       String lookForest  = server.handleCommand("player 1: look");
+         assertTrue(lookForest.contains("cabin"));
         assertTrue(lookForest.contains("riverbank"));
+
+        assertTrue(server.handleCommand("player 1: get log").contains("You picked up a log"));
 
         server.handleCommand("player 1: goto cabin");
         server.handleCommand("player 1: unlock with key");
@@ -44,7 +47,8 @@ final class ExtendedCommandTest {
         assertTrue(lookCabin.contains("cellar"));
         server.handleCommand("player 1: goto cellar");
         server.handleCommand("player 1: pay elf");
-
+        assertTrue(server.handleCommand("player 1: look").contains("shovel"));
+        assertTrue(server.handleCommand("player 1: get shovel").contains("shovel"));
         String invShovel =  server.handleCommand("player 1: inv");
         assertTrue(invShovel.contains("shovel"));
         assertTrue(!invShovel.contains("coin"));
@@ -67,11 +71,17 @@ final class ExtendedCommandTest {
 
         String digWithShovel = server.handleCommand("player 1: dig with shovel");
 
-        String invDig = server.handleCommand("player 1: inv");
+       assertTrue(!server.handleCommand("player 1: inv").contains("gold"));
 
-        String lookAfterDig = server.handleCommand("player 1: look");
+      String lookAfterDig = server.handleCommand("player 1: look");
 
-        assertTrue(!lookAfterDig.contains("soil"));
+         assertTrue(!lookAfterDig.contains("soil"));
+        assertTrue(lookAfterDig.contains("gold"));
+
+        assertTrue(server.handleCommand("player 1: get gold").contains("gold"));
+        assertTrue(server.handleCommand("player 1: inv").contains("gold"));
+
+
         String digWithShovelAgainResult = server.handleCommand("player 1: dig with shovel");
         assertTrue(digWithShovelAgainResult.contains("You do not have the require item"));
 
@@ -172,6 +182,13 @@ final class ExtendedCommandTest {
         server.handleCommand("player 1: goto cellar");
         assertTrue( server.handleCommand("player 1: look").contains("axe"));
         assertTrue( server.handleCommand("player 1: look").contains("coin"));
+
+    }
+
+    @Test
+    void openBox() {
+        assertTrue(server.handleCommand("player 1: open box").contains("opened"));
+
 
     }
 

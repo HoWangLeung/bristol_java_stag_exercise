@@ -73,7 +73,91 @@ public class Player extends GameEntity {
         gameState.setResponse("You have dropped ");
     }
 
+    public void lookLocation(GameState gameState, List<String> commands) throws GameException {
 
+        if (commands.size() > 1) {
+            throw new GameException("Invalid command");
+        }
+
+        if (gameState.getPlayerList().size() == 1) {
+            gameState.setResponse(singplePlayerLook(gameState));
+
+
+        } else if (gameState.getPlayerList().size() > 1) {
+            gameState.setResponse(multiplayerLook(gameState));
+
+        }
+
+    }
+
+    private String singplePlayerLook(GameState gameState) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Location currentLocation = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName());
+        String name = currentLocation.getName();
+        String description = currentLocation.getDescription();
+        String locationDescription = "You are in " + description + " You can see:\n";
+        stringBuilder.append(locationDescription);
+
+        System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
+
+
+        if (currentLocation.getArefacts().size() > 0) {
+            System.out.println("has art");
+            currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
+        }
+
+        if (currentLocation.getFurnitures().size() > 0) {
+            currentLocation.getFurnitures().forEach(furniture -> stringBuilder.append(furniture.getDescription() + "\n"));
+        }
+
+        if (currentLocation.getCharacters().size() > 0) {
+            currentLocation.getCharacters().forEach(character -> stringBuilder.append(character.getDescription() + "\n"));
+        }
+
+        stringBuilder.append("You can access from here:\n");
+        currentLocation.getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
+
+
+        return stringBuilder.toString();
+    }
+
+    private String multiplayerLook(GameState gameState) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        gameState.getPlayerList().forEach(player -> {
+
+            Location currentLocation = gameState.getLocationMap().get(player.getCurrentLocation().getName());
+            String name = currentLocation.getName();
+            String description = currentLocation.getDescription();
+            String locationDescription = player.getName() + ": You are in " + description + " You can see:\n";
+            stringBuilder.append(locationDescription);
+
+            System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
+
+
+            if (currentLocation.getArefacts().size() > 0) {
+                System.out.println("has art");
+                currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
+            }
+
+            if (currentLocation.getFurnitures().size() > 0) {
+                currentLocation.getFurnitures().forEach(furniture -> stringBuilder.append(furniture.getDescription() + "\n"));
+            }
+
+            if (currentLocation.getCharacters().size() > 0) {
+                currentLocation.getCharacters().forEach(character -> stringBuilder.append(character.getDescription() + "\n"));
+            }
+
+            stringBuilder.append("You can access from here:\n");
+            currentLocation.getPaths().forEach(p -> stringBuilder.append(p.getName() + "\n"));
+
+
+        });
+
+
+        return stringBuilder.toString();
+    }
 
 
 
@@ -110,4 +194,10 @@ public class Player extends GameEntity {
 
         gameState.setResponse(gotoResult.toString());
     }
+
+    public void showHealth(){
+
+    }
+
+
 }

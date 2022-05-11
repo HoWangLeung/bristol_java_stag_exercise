@@ -171,6 +171,7 @@ public class GameState {
             NodeList actions = root.getChildNodes();
             System.out.println("actions length = " + actions.getLength());
             //for each action
+
             for(int i = 1; i<=actions.getLength()-2;i+=2){
                 HashSet<GameAction> gameActionHashSet = new HashSet<>();
                 GameAction newGameAction = new GameAction();
@@ -182,6 +183,8 @@ public class GameState {
                 Element consumed = (Element)allActions.getElementsByTagName("consumed").item(0);
                 Element produced = (Element)allActions.getElementsByTagName("produced").item(0);
                 Element narration = (Element)allActions.getElementsByTagName("narration").item(0);
+
+             //   System.out.println("triggers==" + triggers.getTextContent());
 
                 newGameAction.retriveTriggers(triggers);
                 newGameAction.retriveSubjects(subjects,locationMap);
@@ -195,10 +198,24 @@ public class GameState {
                 //System.out.println(newGameAction.getTriggers() + "<<<<");
                 gameActionHashSet.add(newGameAction);
 
-                newGameAction.getTriggers().forEach(trigger->{
 
-                    actionsTree.put(trigger,gameActionHashSet);
+
+                newGameAction.getTriggers().forEach(trigger->{
+                    if(actionsTree.get(trigger)!=null){
+                        HashSet<GameAction> setTobeUpdated = actionsTree.get(trigger);
+                        setTobeUpdated.add(newGameAction);
+                        actionsTree.put(trigger,setTobeUpdated);
+
+                    }else{
+                        actionsTree.put(trigger,gameActionHashSet);
+
+
+                    }
+
+
                 });
+
+
             }
 
 
