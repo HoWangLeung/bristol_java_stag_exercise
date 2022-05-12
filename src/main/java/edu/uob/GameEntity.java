@@ -22,10 +22,6 @@ public abstract class GameEntity
     }
 
 
-    public void loadEntities(){
-        System.out.println("loading entites");
-    }
-
 
 
 }

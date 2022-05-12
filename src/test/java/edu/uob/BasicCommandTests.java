@@ -71,7 +71,7 @@ final class BasicCommandTests {
   void getKeyCheckInventory() {
      server.handleCommand("player 1: goto forest");
   String getKeyResponse =  server.handleCommand("player 1:get key");
-   System.out.println("getKeyResponse "+getKeyResponse);
+
      String response = server.handleCommand("player 1: inv");
     assertTrue(response.contains("key"));
   }
@@ -95,6 +95,13 @@ final class BasicCommandTests {
     assertTrue(server.handleCommand("player 1: health check").startsWith(err));
     assertTrue(server.handleCommand("player 1:              look     ").contains("room"));
   }
+
+  @Test
+  void invalidInput3() {
+    server.handleCommand("player 1: goto forest");
+    server.handleCommand("player 1: chop tree");
+  }
+
 
 
 

@@ -75,7 +75,6 @@ public final class GameServer {
      */
     public String handleCommand(String command) {
         try {
-            System.out.println("current command = " + command);
             // TODO implement your server logic here
 
             ArrayList<String> splitbyColon = new ArrayList<>(Arrays.asList(command.split(":")));

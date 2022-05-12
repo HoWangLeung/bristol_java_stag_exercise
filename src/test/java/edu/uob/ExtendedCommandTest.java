@@ -1,5 +1,6 @@
 package edu.uob;
 
+import com.sun.source.tree.AssertTree;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -194,6 +195,53 @@ final class ExtendedCommandTest {
     }
 
     @Test
+    void testZeroHealth() {
+        server.handleCommand("player 1: get potion");
+        server.handleCommand("player 1: get axe");
+        server.handleCommand("player 1: get coin");
+        assertTrue(server.handleCommand("player 1: health").contains("3"));
+        assertTrue(server.handleCommand("player 1: health").contains("You"));
+
+        server.handleCommand("player 1: goto forest");
+        server.handleCommand("player 1: get key");
+        server.handleCommand("player 1: goto cabin");
+        server.handleCommand("player 1: unlock key");
+        server.handleCommand("player 1: goto cellar");
+
+        server.handleCommand("player 1: attack elf");
+
+        assertTrue(server.handleCommand("player 1: health").contains("2"));
+
+        assertTrue(server.handleCommand("player 1: inv").contains("potion"));
+        server.handleCommand("player 1: drink potion");
+        assertTrue(!server.handleCommand("player 1: inv").contains("potion"));
+
+        assertTrue(server.handleCommand("player 1: health").contains("3"));
+
+        server.handleCommand("player 1: attack elf");
+        server.handleCommand("player 1: attack elf");
+        assertTrue( server.handleCommand("player 1: health").contains("1"));
+        assertTrue( server.handleCommand("player 1: inv").contains("axe"));
+        assertTrue( server.handleCommand("player 1: inv").contains("coin"));
+
+        assertTrue( !server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: look").contains("coin"));
+
+        server.handleCommand("player 1: attack elf");
+        assertTrue( !server.handleCommand("player 1: inv").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: inv").contains("coin"));
+
+        assertTrue( !server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( !server.handleCommand("player 1: look").contains("coin"));
+
+
+        server.handleCommand("player 1: goto cellar");
+        assertTrue( server.handleCommand("player 1: look").contains("axe"));
+        assertTrue( server.handleCommand("player 1: look").contains("coin"));
+
+    }
+
+    @Test
     void openBox() {
         assertTrue(server.handleCommand("player 1: open box").contains("opened"));
 
@@ -233,6 +281,17 @@ final class ExtendedCommandTest {
         server.handleCommand("player 1: chop tree ");
         server.handleCommand("player 1: look ");
 
+    }
+
+    @Test
+    void accessCellarWithoutKey() {
+        assertTrue(server.handleCommand("player 1: goto cellar ").contains("cannot"));
+
+    }
+
+    @Test
+    void getGold() {
+        assertTrue(server.handleCommand("player 1: get gold ").contains("ERROR"));
     }
 
 

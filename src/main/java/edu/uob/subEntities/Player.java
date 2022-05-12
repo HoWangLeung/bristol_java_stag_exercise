@@ -51,7 +51,7 @@ public class Player extends GameEntity {
         StringBuilder inventoryResult = new StringBuilder();
         inventoryResult.append("Your inventory has the following items:\n");
         gameState.getCurrentPlayer().getInventory().forEach(i -> {
-            System.out.println(i.getName()+"<<<<<GET");
+
             inventoryResult.append(i.getDescription() + "\n");
         });
         gameState.setResponse(inventoryResult.toString());
@@ -99,11 +99,10 @@ public class Player extends GameEntity {
         String locationDescription = "You are in " + description + " You can see:\n";
         stringBuilder.append(locationDescription);
 
-        System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
 
 
         if (currentLocation.getArefacts().size() > 0) {
-            System.out.println("has art");
+
             currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
         }
 
@@ -133,11 +132,10 @@ public class Player extends GameEntity {
             String locationDescription = player.getName() + ": You are in " + description + " You can see:\n";
             stringBuilder.append(locationDescription);
 
-            System.out.println("currentLocation.getArefacts()=" + currentLocation.getArefacts().size());
 
 
             if (currentLocation.getArefacts().size() > 0) {
-                System.out.println("has art");
+
                 currentLocation.getArefacts().forEach(artefact -> stringBuilder.append(artefact.getDescription() + "\n"));
             }
 
@@ -168,15 +166,21 @@ public class Player extends GameEntity {
                 '}';
     }
 
-    public void goToLocation(GameState gameState, String target) {
-        System.out.println("goto...");
-
+    public void goToLocation(GameState gameState, String target) throws GameException {
 
         StringBuilder gotoResult = new StringBuilder();
+        String curLocationName = gameState.getCurrentPlayer().getCurrentLocation().getName();
+        Location currentLocation = gameState.getLocationMap().get(curLocationName);
 
-        System.out.println("target goto=" + target);
+        System.out.println("going");
+        boolean isAccessable = currentLocation.getPaths().stream().filter(path -> path.getName().equals(target)).collect(Collectors.toList()).size()>0;
+
+        if(!isAccessable){
+            throw new GameException("You cannot access the place");
+        }
+
+
         gameState.getCurrentPlayer().setCurrentLocation(gameState.getLocationMap().get(target));
-        System.out.println("set after goto=" + gameState.getCurrentPlayer().getCurrentLocation().getName());
 
         currentLocation = gameState.getCurrentPlayer().getCurrentLocation();
         String description = gameState.getCurrentPlayer().getCurrentLocation().getDescription();
@@ -200,4 +204,9 @@ public class Player extends GameEntity {
     }
 
 
+    public void handleDeath(GameState gameState) {
+        if(gameState.getCurrentPlayer().getHealth()==0){
+            gameState.setResponse("you died and lost all of your items, you must return to the start of the game");
+        }
+    }
 }

@@ -19,7 +19,6 @@ public class Storeroom {
     }
 
     public void getTargetArtefact(GameState gameState, List<String> commands) throws GameException {
-        System.out.println("curloc=="+gameState.getCurrentPlayer().getCurrentLocation().getName());
         String target = commands.get(1);
         String finalTarget1 = target;
         List<Artefact> targetArtefect = gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getArefacts().stream()

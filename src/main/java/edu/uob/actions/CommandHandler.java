@@ -27,14 +27,14 @@ public class CommandHandler {
 
         //check required subjects (item)
         if (!checkRequiredSubjects( requiredSubjects, currentPlayer, gameState)) {
-            gameState.setResponse("You do not have the require item");
+            gameState.setResponse("You do not have the required item");
             return;
         }
 
 
-        handleConsume(  currentPlayer, gameState);
-
+        handleConsume(currentPlayer, gameState);
         handleProduced(gameState);
+        currentPlayer.handleDeath(gameState);
 
 
     }
@@ -62,6 +62,8 @@ public class CommandHandler {
     private void handleProduced(GameState gameState) {
         Player currentPlayer = gameState.getCurrentPlayer();
         List<Produced> producedList = new ArrayList<>();
+        List<Artefact> storeRoomArtefacts = gameState.getStoreroom().getArtefacts();
+        String curLocationName = currentPlayer.getCurrentLocation().getName();
 
         for (int i = 0; i < getCurrentAction().getProduced().size(); i++) {
             producedList.add((Produced) getCurrentAction().getProduced().get(i));
@@ -84,13 +86,13 @@ public class CommandHandler {
             } else if (shape.equals("diamond")) { //
                 Set<Artefact> artefacts = new HashSet<>();
 
-                List<Artefact> targetArtefactList = gameState.getStoreroom().getArtefacts().stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
+                List<Artefact> targetArtefactList = storeRoomArtefacts.stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
                 if (targetArtefactList.size() > 0) {
                     System.out.println("found any?");
                     artefacts.add(targetArtefactList.get(0));
                 }
 
-                artefacts.forEach(artefact -> gameState.getLocationMap().get(currentPlayer.getCurrentLocation().getName()).addArefacts(artefact));
+                artefacts.forEach(artefact -> gameState.getLocationMap().get(curLocationName).addArefacts(artefact));
 
 
             } else if (shape.equals("ellipse")) { //Character
@@ -166,26 +168,25 @@ public class CommandHandler {
 
         currentPlayer.setHealth(currentPlayer.getHealth() - 1);
         if (currentPlayer.getHealth() == 0) {
-            System.out.println("drop all items and return to starting location");
+
             currentPlayer.getInventory().forEach(artefact -> {
 
                 gameState.getLocationMap().get(currentLocation.getName()).getArefacts().add(artefact);
 
             });
             currentPlayer.getInventory().clear();
-            gameState.setResponse("Your health is 0");
+
             currentPlayer.setCurrentLocation(gameState.getStartingLocation());
+//            gameState.setResponse("you died and lost all of your items, you must return to the start of the game");
 
         }
     }
 
-    private boolean checkRequiredSubjects( List<Subject> requiredSubjects, Player player, GameState gameState) {
-        System.out.println("checkRequiredSubjects()");
+    private boolean checkRequiredSubjects( List<Subject> requiredSubjects, Player player, GameState gameState) throws GameException {
 
 
         this.currentAction.getSubjects().forEach(c -> requiredSubjects.add((Subject) c));
 
-        requiredSubjects.forEach(s-> System.out.println("requiring " +s.getName()));
 
         for (int i = 0; i < requiredSubjects.size(); i++) {
             boolean existInFurnitrue = false;
@@ -194,7 +195,11 @@ public class CommandHandler {
 
             String subjectName = requiredSubjects.get(i).getName();
             String shape = requiredSubjects.get(i).getShape();
-            System.out.println("required....>>>>>" + requiredSubjects.get(i).getName() + ":" + requiredSubjects.get(i).getShape());
+
+
+            if(shape==null){
+                throw new GameException("The Game does not have this entity?");
+            }
 
             if (shape.equalsIgnoreCase("hexagon")) { //furnitures
 
@@ -232,11 +237,7 @@ public class CommandHandler {
 
 
     public void checkBasicCommand(List<String> commands, GameState gameState) throws GameException {
-        System.out.println("checkBasicCommand");
-
         String firstWord = commands.get(0);
-
-
 
         switch (firstWord) {
             case "inv":
@@ -256,7 +257,6 @@ public class CommandHandler {
                 break;
 
             case "look":
-                System.out.println("look...");
                 gameState.getCurrentPlayer().lookLocation(gameState,commands);
 
                 break;

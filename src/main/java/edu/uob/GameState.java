@@ -57,7 +57,7 @@ public class GameState {
 
 
     public TreeMap<String, Location>  loadEntites(File entitiesFile) {
-        System.out.println("loading entites");
+
         Parser parser = new Parser();
 
         try {
@@ -66,14 +66,8 @@ public class GameState {
             Graph wholeDocument = parser.getGraphs().get(0);
             ArrayList<Graph> sections = wholeDocument.getSubgraphs();
             ArrayList<Graph> locations = sections.get(0).getSubgraphs();
-
             ArrayList<Edge> paths = sections.get(1).getEdges();
-//            paths.forEach(p-> System.out.println(p.getSource().getNode().getId()));
-
             TreeMap<String, Location> locationMap= new TreeMap<>();
-
-
-            Node node = locations.get(0).getNodes(false).get(0);
 
             this.startingLocation= new Location(locations.get(0).getNodes(false).get(0).getId().getId(),locations.get(0).getNodes(false).get(0).getAttribute("description"));
 
@@ -158,7 +152,7 @@ public class GameState {
     }
 
     public void loadActions(TreeMap<String, Location> locationMap, File actionsFile) {
-        System.out.println("Loading actions");
+
         DocumentBuilder builder = null;
         TreeMap<String, HashSet<GameAction>> actionsTree = new TreeMap<String, HashSet<GameAction>>();
 
@@ -169,7 +163,6 @@ public class GameState {
             Element root = document.getDocumentElement();
 
             NodeList actions = root.getChildNodes();
-            System.out.println("actions length = " + actions.getLength());
             //for each action
 
             for(int i = 1; i<=actions.getLength()-2;i+=2){
@@ -229,7 +222,6 @@ public class GameState {
 
         HashSet<GameAction> gameActionHashSet1 = actionsTree.get("open");
 
-        gameActionHashSet1.forEach(s-> System.out.println(s.getProduced()+ " <") );
 
           this.setStartingLocation(startingLocation);
 
@@ -295,6 +287,8 @@ public class GameState {
     }
 
     public void setResponse(String response) {
+        if(response!=null)
+            response=response.trim();
         this.response = response;
     }
 
