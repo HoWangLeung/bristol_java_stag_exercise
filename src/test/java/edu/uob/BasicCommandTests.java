@@ -27,7 +27,7 @@ final class BasicCommandTests {
   // Test to spawn a new server and send a simple "look" command
   @Test
   void testLookingAroundStartLocation() {
-    String response = server.handleCommand("player 1: look").toLowerCase();
+    String response = server.handleCommand("playerOne: look").toLowerCase();
     System.out.println(response);
 
     assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
@@ -37,70 +37,78 @@ final class BasicCommandTests {
 
   @Test
   void testGetPotion() {
-    String response = server.handleCommand("player 1: get potion");
+    String response = server.handleCommand("playerOne: get potion");
     assertTrue(response.contains("You picked up a potion"), "should contain potion");
   }
 
   @Test
   void getTrapdoorFail() {
-    String response = server.handleCommand("player 1: get trapdoor");
+    String response = server.handleCommand("playerOne: get trapdoor");
     assertTrue(response.startsWith(err));
   }
 
   @Test
   void getElfFail() {
-    String response = server.handleCommand("player 1: get elf");
+    String response = server.handleCommand("playerOne: get elf");
     assertTrue(response.startsWith(err));
   }
 
   @Test
   void getKeyFail() {
-    String response = server.handleCommand("player 1: get key");
+    String response = server.handleCommand("playerOne: get key");
     assertTrue(response.startsWith(err));
   }
 
   @Test
   void getKey() {
-    server.handleCommand("player 1: goto forest");
-    String response = server.handleCommand("player 1: get key");
+    server.handleCommand("playerOne: goto forest");
+    String response = server.handleCommand("playerOne: get key");
     assertTrue(response.contains("You picked up a key"));
 
   }
 
   @Test
   void getKeyCheckInventory() {
-     server.handleCommand("player 1: goto forest");
-  String getKeyResponse =  server.handleCommand("player 1:get key");
+     server.handleCommand("playerOne: goto forest");
+  String getKeyResponse =  server.handleCommand("playerOne:get key");
 
-     String response = server.handleCommand("player 1: inv");
+     String response = server.handleCommand("playerOne: inv");
     assertTrue(response.contains("key"));
   }
 
   @Test
   void look() {
-    server.handleCommand("player 1: look");
+    server.handleCommand("     players 's              One: look    ");
 
   }
 
   @Test
   void invalidInput1() {
-    assertTrue(server.handleCommand("player 1: look around").startsWith(err));
+    assertTrue(server.handleCommand("playerOne: look around").startsWith(err));
 
-    assertTrue(server.handleCommand("player 1: look").contains("room"));
+    assertTrue(server.handleCommand("playerOne: look").contains("room"));
   }
 
 
   @Test
   void invalidInput2() {
-    assertTrue(server.handleCommand("player 1: health check").startsWith(err));
-    assertTrue(server.handleCommand("player 1:              look     ").contains("room"));
+    assertTrue(server.handleCommand("playerOne: health check").startsWith(err));
+    assertTrue(server.handleCommand("playerOne:              look     ").contains("room"));
   }
 
   @Test
   void invalidInput3() {
-    server.handleCommand("player 1: goto forest");
-    server.handleCommand("player 1: chop tree");
+    server.handleCommand("playerOne: goto forest");
+    server.handleCommand("playerOne: chop tree");
   }
+
+  @Test
+  void invalidGoto() {
+    assertTrue(server.handleCommand("playerOne: goto riverbank").contains("cannot"));
+
+  }
+
+
 
 
 

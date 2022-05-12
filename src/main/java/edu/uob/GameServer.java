@@ -77,17 +77,17 @@ public final class GameServer {
         try {
             // TODO implement your server logic here
 
-            ArrayList<String> splitbyColon = new ArrayList<>(Arrays.asList(command.split(":")));
+
 
             helper.registerPlayer(gameState,command);
 
-            List<String> commands = new ArrayList<>(Arrays.asList(splitbyColon.get(1).trim().split(" ")));
+            List<String> commands = helper.processCommand(command);
 
            commandHandler.checkBasicCommand(commands, gameState);
 
 
             if (gameState.getResponse() != null) {
-                System.out.println("will return:");
+
                 System.out.println(gameState.getResponse());
                 System.out.println("====================================================================================");
                 return gameState.getResponse();
@@ -98,7 +98,7 @@ public final class GameServer {
 
 
 
-            System.out.println("This will return:\n"+gameState.getResponse());
+            System.out.println(gameState.getResponse());
             System.out.println("====================================================================================");
             return gameState.getResponse();
         } catch (GameException e) {

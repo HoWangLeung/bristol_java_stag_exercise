@@ -7,6 +7,8 @@ import edu.uob.subEntities.Location;
 import edu.uob.subEntities.Player;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Helper {
@@ -19,9 +21,10 @@ public class Helper {
        return "a shape";
    }
 
-    public void registerPlayer(GameState gameState,String command) {
+    public void registerPlayer(GameState gameState,String command) throws GameException {
         ArrayList<String> splitbyColon = new ArrayList<>(Arrays.asList(command.split(":")));
         String playerName = splitbyColon.get(0);
+        this.checkNameFormat(playerName);
         boolean isPlayerExist = gameState.getPlayerList().stream().filter(player -> player.getName().equals(playerName)).collect(Collectors.toList()).size() > 0;
 
         if (!isPlayerExist) {
@@ -35,6 +38,25 @@ public class Helper {
             gameState.setCurrentPlayer(currentPlayer);
 
         }
+    }
+
+    private void checkNameFormat(String playerName) throws GameException {
+        System.out.println("playerName="+playerName);
+        Pattern pattern = Pattern.compile("[0-9$&+,:;=?@#|<>.^*()%!]", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(playerName);
+        boolean matchFound = matcher.find();
+        if(matchFound) {
+            throw new GameException("Valid player names can consist of uppercase and lowercase letters, spaces, apostrophes and hyphens");
+        } else {
+            System.out.println("OK?");
+        }
+    }
+
+    public void checklengthMaxOne(List<String> commands) throws GameException {
+        if(commands.size()!=1){throw new GameException("expect exactly one words");}
+    }
+    public void checklengthMaxTwo(List<String> commands) throws GameException {
+        if(commands.size()!=2){throw new GameException("expect exactly two words");}
     }
 
     public <T> List<T> findIntersection(List<T> list1, List<T> list2) throws GameException {
@@ -51,5 +73,11 @@ public class Helper {
         }
 
         return list;
+    }
+
+    public List<String> processCommand(String command) {
+
+        ArrayList<String> splitbyColon = new ArrayList<>(Arrays.asList(command.split(":")));
+        return new ArrayList<>(Arrays.asList(splitbyColon.get(1).trim().split(" "))).stream().map(w->w.toLowerCase()).collect(Collectors.toList());
     }
 }

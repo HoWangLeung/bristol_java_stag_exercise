@@ -70,7 +70,7 @@ public class Player extends GameEntity {
         player.getInventory().remove(filtered.get(0));
         gameState.getLocationMap().get(gameState.getCurrentPlayer().getCurrentLocation().getName()).getArefacts().add(filtered.get(0));
 
-        gameState.setResponse("You have dropped ");
+        gameState.setResponse("You have dropped a " + target);
     }
 
     public void lookLocation(GameState gameState, List<String> commands) throws GameException {
@@ -207,6 +207,7 @@ public class Player extends GameEntity {
     public void handleDeath(GameState gameState) {
         if(gameState.getCurrentPlayer().getHealth()==0){
             gameState.setResponse("you died and lost all of your items, you must return to the start of the game");
+            gameState.getCurrentPlayer().setHealth(3);
         }
     }
 }

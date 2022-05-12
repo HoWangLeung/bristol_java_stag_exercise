@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class CommandHandler {
 
     private GameAction currentAction = new GameAction();
+    private Helper helper = new Helper();
 
 
     public void checkTrigger(List<String> commands, GameState gameState) throws GameException {
@@ -88,7 +89,7 @@ public class CommandHandler {
 
                 List<Artefact> targetArtefactList = storeRoomArtefacts.stream().filter(artefact -> artefact.getName().equals(name)).collect(Collectors.toList());
                 if (targetArtefactList.size() > 0) {
-                    System.out.println("found any?");
+
                     artefacts.add(targetArtefactList.get(0));
                 }
 
@@ -102,7 +103,6 @@ public class CommandHandler {
                             .stream().filter(character -> character.getName().equals(name)).collect(Collectors.toList());
 
                     if (targetCharacterList.size() > 0) {
-                        System.out.println("found any?");
                         characters.add(targetCharacterList.get(0));
                     }
 
@@ -242,29 +242,32 @@ public class CommandHandler {
         switch (firstWord) {
             case "inv":
             case "inventory":
+                helper.checklengthMaxOne(commands);
                 gameState.getCurrentPlayer().listInventory(gameState);
                 break;
             case "get":
+                helper.checklengthMaxTwo(commands);
                 gameState.getStoreroom().getTargetArtefact(gameState, commands);
                 break;
             case "drop":
+                helper.checklengthMaxTwo(commands);
                 String target = commands.get(1);
                 gameState.getCurrentPlayer().dropItemFromInventory(gameState,target);
                 break;
             case "goto":
+                helper.checklengthMaxTwo(commands);
                 String targetLocation = commands.get(1);
                 gameState.getCurrentPlayer().goToLocation(gameState,targetLocation);
                 break;
 
             case "look":
+                helper.checklengthMaxOne(commands);
                 gameState.getCurrentPlayer().lookLocation(gameState,commands);
 
                 break;
 
             case "health":
-                if (commands.size() > 1) {
-                    throw new GameException("health is a built in command, which cannot be followed by any command");
-                }
+                helper.checklengthMaxOne(commands);
                 gameState.getCurrentPlayer().getHealth();
 
                 gameState.setResponse("Your current health is " + gameState.getCurrentPlayer().getHealth());
